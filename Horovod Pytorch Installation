@@ -1,0 +1,30 @@
+Horovod Package Installation on CARC:
+To install Horovod on the Discovery cluster you need to follow these steps:
+First, ask for an interactive node:
+salloc --partition=gpu --gres=gpu:v100:2 --time=02:00:00 --exclusive
+Load the necessary modules
+module purge
+module load gcc/9.2.0
+module load openmpi/4.1.1-gdr
+module load conda
+Set the environmental variables
+export LD_LIBRARY_PATH=/spack/apps/linux-centos7-x86_64/gcc-8.3.0/nccl-2.8.3-1-j6vfxde24ij7cwixihki347ipohx5duf/lib:$LD_LIBRARY_PATH
+export LIBRARY_PATH=/spack/apps/linux-centos7-x86_64/gcc-8.3.0/nccl-2.8.3-1-j6vfxde24ij7cwixihki347ipohx5duf/lib:$LIBRARY_PATH
+export CPATH=/spack/apps/linux-centos7-x86_64/gcc-8.3.0/nccl-2.8.3-1-j6vfxde24ij7cwixihki347ipohx5duf/include:$CPATH
+export NCCL_ROOT=/spack/apps/linux-centos7-x86_64/gcc-8.3.0/nccl-2.8.3-1-j6vfxde24ij7cwixihki347ipohx5duf
+
+export HOROVOD_CMAKE=/spack/2206/apps/linux-centos7-x86_64_v3/gcc-11.3.0/cmake-3.23.2-vquxyjj/bin/cmake
+export HOROVOD_CUDA_HOME=$CUDA_ROOT
+export HOROVOD_BUILD_CUDA_CC_LIST=60,70,80,86
+export HOROVOD_GPU=CUDA
+export HOROVOD_NCCL_HOME=$NCCL_ROOT
+export HOROVOD_GPU_OPERATIONS=NCCL
+export HOROVOD_WITH_MPI=1
+export HOROVOD_CPU_OPERATIONS=MPI
+export HOROVOD_WITH_PYTORCH=1
+Create a new Conda environment and install PyTorch (or Tensorflow)
+conda create --name horovod-pytorch python=3.10
+conda activate horovod-pytorch
+conda install pytorch=1.12.1 torchvision torchaudio cudatoolkit=11.3 -c pytorch
+Install Horovod
+CC=mpicc CXX=mpicxx pip install --no-cache-dir horovod
